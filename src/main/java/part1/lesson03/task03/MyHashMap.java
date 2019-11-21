@@ -3,15 +3,23 @@ package part1.lesson03.task03;
 import java.util.Arrays;
 import java.util.Map;
 
+/**
+ * @param <K>
+ * @param <V>
+ */
 class MyHashMap<K, V> {
        private Entry[] buckets;
        private float loadFactor;
        private int size = 0;
 
-       static final int DEFAULT_INITIAL_CAPACITY = 16;
-       static final float DEFAULT_LOAD_FACTOR = 0.75f;
+       private   static final int DEFAULT_INITIAL_CAPACITY = 16;
+       private  static final float DEFAULT_LOAD_FACTOR = 0.75f;
 
-       class Entry<K, V> implements Map.Entry<K, V> {
+    /**
+     * @param <K>
+     * @param <V>
+     */
+       static class Entry<K, V> implements Map.Entry<K, V> {
            final int hash;
            final K key;
            V value;
@@ -50,35 +58,31 @@ class MyHashMap<K, V> {
                this.next = next;
            }
        }
-    /**
-     * default constructor
-     */
+
 
        public MyHashMap() {
            buckets = new Entry[DEFAULT_INITIAL_CAPACITY];
            loadFactor = DEFAULT_LOAD_FACTOR;
        }
 
-    /**
-     * constructor with 1 parameter
-     */
        public MyHashMap(float loadFactor) {
            buckets = new Entry[DEFAULT_INITIAL_CAPACITY];
            this.loadFactor = loadFactor;
        }
 
-    /**
-     * constructor with 2 values
-     */
+
        public MyHashMap(int capacity, float loadFactor) {
            buckets = new Entry[capacity];
            this.loadFactor = loadFactor;
        }
 
-    /**
-     *  method put
-     */
 
+    /**
+     * if contains same key , change value
+     * @param key
+     * @param value
+     * @return
+     */
        public V put(K key, V value) {
            if (key == null) {
                throw new NullPointerException();
@@ -88,16 +92,16 @@ class MyHashMap<K, V> {
                growBuckets();
            }
            Entry<K, V> entry = new Entry<>(key, value, null);
-           size++;//increment size
+           size++;
            int hash = hash(entry.hash);
-           if (buckets[hash] == null) { // not element
+           if (buckets[hash] == null) {
                buckets[hash] = entry;
                return entry.getValue();
-           } else {//bucket cell has element
+           } else {
                Entry<K, V> current = buckets[hash];
-               while (current != null) { // last element
-                   if (current.getKey().equals(entry.getKey())) { //if contains same key
-                       current.setValue(entry.getValue()); //change value
+               while (current != null) {
+                   if (current.getKey().equals(entry.getKey())) {
+                       current.setValue(entry.getValue());
                        return entry.getValue();
                    }
                    current = current.next;
@@ -108,18 +112,22 @@ class MyHashMap<K, V> {
 
        }
 
+
     /**
-     *  method finds V value
+     * map not contains elements
+     * buckets contains same key
+     * @param key
+     * @return null
      */
        public V get(K key) {
            int hash = hash(key.hashCode());
-           if (buckets[hash] == null) { //map not contains elements
+           if (buckets[hash] == null) {
                return null;
            }
            Entry<K, V> currentWithSameKeyHashCode = buckets[hash];
 
            while (currentWithSameKeyHashCode != null) {
-               if (currentWithSameKeyHashCode.getKey().equals(key)) { // buckets contains same key
+               if (currentWithSameKeyHashCode.getKey().equals(key)) {
                    return currentWithSameKeyHashCode.getValue();
                }
                currentWithSameKeyHashCode = currentWithSameKeyHashCode.next;
@@ -128,12 +136,16 @@ class MyHashMap<K, V> {
 
        }
 
+
     /**
-     *  method remove
+     * map not contains with such key
+     * delete first  entry node
+     * @param key
+     * @return
      */
        public V remove(K key) {
            int hash = hash(key.hashCode());
-           if (buckets[hash] == null) { //map not contains with such key
+           if (buckets[hash] == null) {
                return null;
            }
 
@@ -145,9 +157,9 @@ class MyHashMap<K, V> {
 
            while (currentWithSameKeyHashCode != null) {
                if (currentWithSameKeyHashCode.key.equals(key)) {
-                   if (previous == null) {// delete first  entry node
+                   if (previous == null) {
                        buckets[hash] = buckets[hash].next;
-//                       return (V) buckets[hash].getValue();
+
                    } else {
                        previous.next = currentWithSameKeyHashCode.next;
                        return currentWithSameKeyHashCode.getValue();
@@ -160,22 +172,19 @@ class MyHashMap<K, V> {
        }
 
 
-    /**
-     *  method count
-     */
        private int hash(int hashCode) {
            return Math.abs(hashCode) % buckets.length;
        }
 
 
     /**
-     *  method doubles buckets
+     * увеличиваем масси в 2 раза  и прохлдим элементы и помещаем в новый массив
      */
        private void growBuckets() {
            size = 0;// сделаем размер 0
            Entry<K, V>[] temp = buckets;
-           buckets = new Entry[buckets.length * 2]; // увеличение массива в 2 раза
-           for (Entry<K, V> t : temp) { //проходим эедементы и помещаем в новый массив
+           buckets = new Entry[buckets.length * 2];
+           for (Entry<K, V> t : temp) {
                if (t == null) {
                    continue;
                }
